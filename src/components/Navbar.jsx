@@ -62,6 +62,9 @@ const Navbar = () => {
           <Link to="/contact" className="text-lg">
             Contact
           </Link>
+          <button className="bg-blue-800 hover:bg-gray-200 hover:text-blue-800 text-lg px-6 py-3 rounded-md">
+            Request Quote
+          </button>
         </div>
       )}
     </div>

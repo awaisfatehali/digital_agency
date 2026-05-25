@@ -20,12 +20,12 @@ import { FaRegPaperPlane } from "react-icons/fa";
 import { FaRegLightbulb } from "react-icons/fa";
 import { FaRegCreditCard } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
+import { LiaPaintBrushSolid } from "react-icons/lia";
 import QuestionComponent from "./QuestionComponent";
 import HelpSection from "./HelpSection";
 import PartnerSection from "./PartnerSection";
 
 const HomePage = () => {
-  
   return (
     <>
       <section
@@ -38,6 +38,11 @@ const HomePage = () => {
         {/* Content */}
         <div className="relative z-10">
           <Navbar />
+          <div className="fixed right-0 top-1/2 -translate-y-1/2 flex items-center gap-3 bg-white shadow-md px-6 py-4 rounded-l-[5px] z-50">
+            <LiaPaintBrushSolid className="text-lg md:text-4xl text-blue-800" />
+
+            <h1 className=" text-lg md:text-2xl font-bold text-gray-800">Customize</h1>
+          </div>
 
           <div className="flex flex-col items-center md:items-start justify-center gap-6 px-6 md:px-44 py-36">
             <h3 className="text-white text-center md:text-left text-xl md:text-2xl font-bold">
@@ -62,7 +67,6 @@ const HomePage = () => {
 
       {/* Help and Support Section */}
       <HelpSection />
-      
 
       {/* Portfolio Section */}
       <section className="bg-white pt-10 md:px-32 md:p-32 flex flex-col items-center gap-10">
@@ -140,7 +144,7 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-      <QuestionComponent/>
+      <QuestionComponent />
       <Footer />
     </>
   );
