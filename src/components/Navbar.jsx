@@ -29,9 +29,11 @@ const Navbar = () => {
             Contact
           </Link>
         </div>
-        <button className="bg-blue-800 hover:bg-gray-200 hover:text-blue-800 text-lg px-6 py-3 rounded-md">
-          Request Quote
-        </button>
+        <Link to="/Adminlogin" className="text-lg">
+          <button className="bg-blue-800 hover:bg-gray-200 hover:text-blue-800 text-lg px-6 py-3 rounded-md">
+            Login
+          </button>
+        </Link>
       </div>
 
       <div className="md:hidden ml-auto mr-4">
@@ -62,9 +64,11 @@ const Navbar = () => {
           <Link to="/contact" className="text-lg">
             Contact
           </Link>
-          <button className="bg-blue-800 hover:bg-gray-200 hover:text-blue-800 text-lg px-6 py-3 rounded-md">
-            Request Quote
-          </button>
+          <Link to="/Admin_Penal" className="text-lg">
+            <button className="bg-blue-800 hover:bg-gray-200 hover:text-blue-800 text-lg px-6 py-3 rounded-md">
+              Login
+            </button>
+          </Link>
         </div>
       )}
     </div>
