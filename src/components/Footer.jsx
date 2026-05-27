@@ -84,7 +84,7 @@ const Footer = () => {
       <div className="border-t border-gray-500"></div>
 
       {/* Bottom */}
-      <div className="text-center py-10 text-lg text-gray-200">
+      <div className="text-center p-10 text-lg text-gray-200">
         Copyright © 2026 Digital Agency | Powered by Digital Agency
       </div>
     </footer>

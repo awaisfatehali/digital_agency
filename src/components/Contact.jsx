@@ -7,6 +7,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { FaPhoneVolume } from "react-icons/fa";
 import { FaMobile } from "react-icons/fa";
 import { MdOutlineEmail } from "react-icons/md";
+import Layout from "./Layout.jsx";
 
 const Contact = () => {
   return (
@@ -21,25 +22,27 @@ const Contact = () => {
         {/* Content */}
         <div className="relative z-10">
           <Navbar />
-          <div className="text-center py-20 md:px-[450px] gap-6 flex flex-col items-center">
-            <h1 className="text-white text-5xl font-black">Contact Us</h1>
-            <h3 className="text-white font-bold">
-              Contact for Premium Business Services
-            </h3>
-            <p className="text-white">
-              Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
-              Suspendisse et justo. Praesent mattis commodo augue. Aliquam
-              ornare hendrerit augue.
-            </p>
-          </div>
+          <Layout>
+            <div className="text-center py-20 gap-6 flex flex-col items-center">
+              <h1 className="text-white text-5xl font-black">Contact Us</h1>
+              <h3 className="text-white font-bold">
+                Contact for Premium Business Services
+              </h3>
+              <p className="text-white">
+                Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+                Suspendisse et justo. Praesent mattis commodo augue. Aliquam
+                ornare hendrerit augue.
+              </p>
+            </div>
+          </Layout>
         </div>
       </section>
-      <section className="flex flex-col lg:flex-row justify-center items-start gap-10 bg-gray-300 px-6 lg:px-16 py-24">
+      <section className="flex flex-col lg:flex-row justify-center items-start md:gap-30 gap-6 bg-gray-300 px-6 lg:px-16 py-24">
         {/* Left Side */}
         <div className="w-full lg:w-1/2">
           <h1 className="text-3xl font-bold mb-8">Request Free Consultation</h1>
 
-          <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-30">
             {/* Form */}
             <form className="flex flex-col gap-4 bg-white p-8 rounded-lg shadow-md w-full md:w-1/2">
               <input
@@ -80,7 +83,7 @@ const Contact = () => {
         {/* Right Side */}
         <div className="flex flex-col gap-6  ">
           <h1 className="text-3xl font-bold mb-2">Get In Touch</h1>
-          <div className="bg-white p-8 rounded-lg shadow-md h-[380px] lg:w-[350px]">
+          <div className="bg-white p-8 rounded-lg shadow-md w-[365px] h-[380px] md::w-[350px]">
             <h1 className="text-lg font-bold mb-6">Reach Us</h1>
             <div className="flex items-center gap-2">
               <FaLocationDot className="text-blue-500" />
@@ -105,7 +108,9 @@ const Contact = () => {
           </div>
         </div>
       </section>
+      <Layout>
       <QuestionComponent />
+      </Layout>
       <Footer />
     </>
   );

@@ -14,6 +14,7 @@ import testimonial from "../assets/testimonial.jpg";
 import QuestionComponent from "./QuestionComponent";
 import HelpSection from "./HelpSection";
 import PartnerSection from "./PartnerSection";
+import Layout from "./Layout";
 
 const services = () => {
   return (
@@ -28,22 +29,26 @@ const services = () => {
         {/* Content */}
         <div className="relative z-10">
           <Navbar />
-          <div className="text-center py-20 md:px-[450px] gap-6 flex flex-col items-center">
-            <h1 className="text-white text-5xl font-black">Services</h1>
-            <h3 className="text-white font-bold">
-              We provide a wide range of Services
-            </h3>
-            <p className="text-white">
-              Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
-              Suspendisse et justo. Praesent mattis commodo augue. Aliquam
-              ornare hendrerit augue.
-            </p>
-          </div>
+          <Layout>
+            <div className="text-center py-20  gap-6 flex flex-col items-center">
+              <h1 className="text-white text-5xl font-black">Services</h1>
+              <h3 className="text-white font-bold">
+                We provide a wide range of Services
+              </h3>
+              <p className="text-white">
+                Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+                Suspendisse et justo. Praesent mattis commodo augue. Aliquam
+                ornare hendrerit augue.
+              </p>
+            </div>
+          </Layout>
         </div>
       </section>
 
       {/* Help and Support Section */}
-      <HelpSection />
+      <Layout>
+        <HelpSection />
+      </Layout>
 
       {/* Portfolio Section */}
 
@@ -51,26 +56,28 @@ const services = () => {
       <PartnerSection />
 
       {/* Review Section */}
-      <section className="flex flex-col pt-10 justify-center items-center bg-gray-200 md:px-44 py-32 gap-6">
-        <h1 className="text-lg md:text-2xl font-bold">
-          "Amazing Designs and Quality Work!"
-        </h1>
-        <p className=" px-10 text-center md:px-64">
-          Nam at congue diam. Etiam erat lectus, finibus eget commodo quis,
-          tincidunt eget leo. Nullam quis vulputate orci, ac accumsan quam.
-          Morbi fringilla congue libero, ac malesuada vulputate pharetra.
-        </p>
-        <div className="flex flex-col items-center">
-          <img
-            src={testimonial}
-            alt="testimonial"
-            className="w-[50px] rounded-full"
-          />
-          <h3 className="text-lg font-bold">John Doe</h3>
-          <p className="text-gray-600">CEO, Company Inc.</p>
-        </div>
-      </section>
-      <QuestionComponent />
+      <Layout>
+        <section className="flex flex-col pt-10 justify-center items-center bg-gray-200  py-32 gap-6">
+          <h1 className="text-lg md:text-2xl font-bold">
+            "Amazing Designs and Quality Work!"
+          </h1>
+          <p className=" px-10 text-center md:px-64">
+            Nam at congue diam. Etiam erat lectus, finibus eget commodo quis,
+            tincidunt eget leo. Nullam quis vulputate orci, ac accumsan quam.
+            Morbi fringilla congue libero, ac malesuada vulputate pharetra.
+          </p>
+          <div className="flex flex-col items-center">
+            <img
+              src={testimonial}
+              alt="testimonial"
+              className="w-[50px] rounded-full"
+            />
+            <h3 className="text-lg font-bold">John Doe</h3>
+            <p className="text-gray-600">CEO, Company Inc.</p>
+          </div>
+        </section>
+        <QuestionComponent />
+      </Layout>
       <Footer />
     </>
   );

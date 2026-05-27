@@ -7,6 +7,8 @@ import {Routes, Route} from 'react-router-dom'
 import HomePage from "./components/HomePage.jsx";
 import Services from "./components/Services.jsx";
 import Contact from "./components/Contact.jsx"
+import Adminservices from "./components/Admin/Adminservices.jsx"
+import AdminLogin from "./components/Admin/Adminlogin.jsx";
 
 function App() {
   const [ProcessDetail] = useState([
@@ -74,6 +76,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/Admin_Penal" element={<Adminservices />} />
+        <Route path="/Adminlogin" element={<AdminLogin />} />
       </Routes>
     </>
   );
