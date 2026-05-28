@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { server } from "../../../server";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminLogin({ onLogin }) {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -7,6 +10,7 @@ export default function AdminLogin({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
@@ -15,7 +19,7 @@ export default function AdminLogin({ onLogin }) {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError("");
     if (!form.email.trim() || !form.password.trim()) {
       setError("Please fill in all fields.");
@@ -27,14 +31,19 @@ export default function AdminLogin({ onLogin }) {
     }
     setLoading(true);
     // TODO: POST /api/admin/login { email, password }
-    setTimeout(() => {
-      setLoading(false);
-      if (form.email === "admin@example.com" && form.password === "password") {
-        onLogin?.();
-      } else {
-        setError("Invalid email or password. Try admin@example.com / password");
+    try {
+      const response = await axios.post(`${server}/admin/login`, form,{
+        withCredentials: true,
+      });
+      if(response.data.success){
+        navigate("/admin/dashboard");
       }
-    }, 1200);
+    } catch (err) {
+      setError("Invalid email or password.");
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleKey = (e) => {

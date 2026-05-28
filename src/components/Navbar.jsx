@@ -9,7 +9,7 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
   return (
-    <div className="flex w-full h-20 items-center py-4 md:px-[160px] text-white relative z-50">
+    <div className="flex w-full h-20 items-center py-4 lg:px-[160px] text-white relative z-50">
       <div className="w-1/3 flex justify-start items-center">
         <img src={Logo} alt="logo" className="w-48 ml-4" />
       </div>
@@ -29,7 +29,7 @@ const Navbar = () => {
             Contact
           </Link>
         </div>
-        <Link to="/Adminlogin" className="text-lg">
+        <Link to="/admin/login" className="text-lg">
           <button className="bg-blue-800 hover:bg-gray-200 hover:text-blue-800 text-lg px-6 py-3 rounded-md">
             Login
           </button>
@@ -64,7 +64,7 @@ const Navbar = () => {
           <Link to="/contact" className="text-lg">
             Contact
           </Link>
-          <Link to="/Admin_Penal" className="text-lg">
+          <Link to="/admin/login" className="text-lg">
             <button className="bg-blue-800 hover:bg-gray-200 hover:text-blue-800 text-lg px-6 py-3 rounded-md">
               Login
             </button>

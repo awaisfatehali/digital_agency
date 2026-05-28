@@ -7,9 +7,32 @@ import { FaLocationDot } from "react-icons/fa6";
 import { FaPhoneVolume } from "react-icons/fa";
 import { FaMobile } from "react-icons/fa";
 import { MdOutlineEmail } from "react-icons/md";
+import { useState } from "react";
 import Layout from "./Layout.jsx";
+import { server } from "../../server.js";
+import axios from "axios";
 
 const Contact = () => {
+  const [name, setname] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(`${server}/query/submit`, {name,email,message});
+      if(response.data.success){
+        alert("Query submitted successfully");
+        setname("");
+        setEmail("");
+        setMessage("");
+      } 
+    } catch (error) {
+      console.error("Error submitting query:", error);  
+    }
+    
+  };
+
   return (
     <>
       <section
@@ -44,23 +67,35 @@ const Contact = () => {
 
           <div className="flex flex-col md:flex-row gap-6 md:gap-30">
             {/* Form */}
-            <form className="flex flex-col gap-4 bg-white p-8 rounded-lg shadow-md w-full md:w-1/2">
+            <form
+              className="flex flex-col gap-4 bg-white p-8 rounded-lg shadow-md w-full md:w-1/2"
+              onSubmit={handleSubmit}
+            >
               <input
                 type="text"
+                name="name"
+                value={name}
                 placeholder="Name"
                 className="border px-4 py-3 rounded-md outline-none focus:border-blue-500"
+                onChange={(e) => setname(e.target.value)}
               />
 
               <input
+                name="email"
                 type="email"
+                value={email}
                 placeholder="Email"
                 className="border px-4 py-3 rounded-md outline-none focus:border-blue-500"
+                onChange={(e) => setEmail(e.target.value)}
               />
 
               <textarea
+                name="message"
                 placeholder="Message"
+                value={message}
                 rows="4"
                 className="border px-4 py-3 rounded-md outline-none focus:border-blue-500"
+                onChange={(e) => setMessage(e.target.value)}
               ></textarea>
 
               <button
@@ -104,12 +139,14 @@ const Contact = () => {
             </div>
 
             <h1 className="text-lg font-bold my-7">Call Us Toll Free</h1>
-            <h1 className="text-3xl font-black text-blue-900">1-800-123-4567</h1>
+            <h1 className="text-3xl font-black text-blue-900">
+              1-800-123-4567
+            </h1>
           </div>
         </div>
       </section>
       <Layout>
-      <QuestionComponent />
+        <QuestionComponent />
       </Layout>
       <Footer />
     </>

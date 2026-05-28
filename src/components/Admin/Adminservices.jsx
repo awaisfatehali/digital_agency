@@ -1,45 +1,146 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { server } from "../../../server.js";
+import axios from "axios";
 
-const DUMMY_SERVICES = [
-  { id: 1, name: "UI/UX Design", description: "End-to-end interface design from wireframes to polished prototypes using Figma.", logoPreview: null, logo: null },
-  { id: 2, name: "Web Development", description: "Full-stack web apps with React, Node.js and scalable cloud infrastructure.", logoPreview: null, logo: null },
-  { id: 3, name: "SEO & Marketing", description: "Organic growth strategies, keyword targeting, and performance analytics.", logoPreview: null, logo: null },
-  { id: 4, name: "Brand Identity", description: "Logo design, brand guidelines, color systems, and typography kits.", logoPreview: null, logo: null },
+const SERVICE_ICONS = [
+  {
+    id: "design",
+    label: "Design",
+    svg: (color) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+        <circle cx="12" cy="12" r="3" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /><path d="M4.93 4.93a10 10 0 0 0 0 14.14" />
+      </svg>
+    ),
+  },
+  {
+    id: "code",
+    label: "Code",
+    svg: (color) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+        <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
+      </svg>
+    ),
+  },
+  {
+    id: "seo",
+    label: "SEO",
+    svg: (color) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+        <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+    ),
+  },
+  {
+    id: "brand",
+    label: "Brand",
+    svg: (color) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+        <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
+      </svg>
+    ),
+  },
+  {
+    id: "mobile",
+    label: "Mobile",
+    svg: (color) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+        <rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12.01" y2="18" />
+      </svg>
+    ),
+  },
+  {
+    id: "cloud",
+    label: "Cloud",
+    svg: (color) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+        <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
+      </svg>
+    ),
+  },
+  {
+    id: "chart",
+    label: "Analytics",
+    svg: (color) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+        <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
+      </svg>
+    ),
+  },
+  {
+    id: "shield",
+    label: "Security",
+    svg: (color) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+    ),
+  },
+  {
+    id: "mail",
+    label: "Email",
+    svg: (color) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+        <polyline points="22,6 12,13 2,6" />
+      </svg>
+    ),
+  },
+  {
+    id: "video",
+    label: "Video",
+    svg: (color) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+        <polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" />
+      </svg>
+    ),
+  },
+  {
+    id: "settings",
+    label: "DevOps",
+    svg: (color) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+    ),
+  },
+  {
+    id: "pen",
+    label: "Content",
+    svg: (color) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+        <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+      </svg>
+    ),
+  },
 ];
 
-const DUMMY_QUERIES = [
-  { id: 1, name: "Sara Ahmed", email: "sara.ahmed@gmail.com", service: "Web Development", message: "Can you build a multi-vendor ecommerce platform? Need it ready in 3 months with payment integration.", time: "2h ago", status: "new" },
-  { id: 2, name: "Usman Tariq", email: "usman.t@outlook.com", service: "UI/UX Design", message: "Looking for a complete redesign of our mobile banking app. The current UX feels very cluttered.", time: "5h ago", status: "new" },
-  { id: 3, name: "Fatima Malik", email: "fatima@startup.pk", service: "Brand Identity", message: "We are launching a fintech startup and need full branding done from scratch. Logo, colors, fonts.", time: "1d ago", status: "read" },
-  { id: 4, name: "Bilal Hassan", email: "bilal.h@corp.com", service: "SEO & Marketing", message: "Monthly SEO retainer inquiry — what packages do you offer specifically for SaaS companies?", time: "2d ago", status: "read" },
-  { id: 5, name: "Zara Khan", email: "zara.khan@agency.io", service: "Web Development", message: "Need a portfolio website built in Next.js. Clean, fast, minimal design. Budget is flexible.", time: "3d ago", status: "read" },
-  { id: 6, name: "Ali Raza", email: "ali.raza@techco.pk", service: "SEO & Marketing", message: "We recently launched a new product line and need a full digital marketing campaign to drive traffic.", time: "4d ago", status: "read" },
+const AVATAR_COLORS = [
+  { bg: "bg-blue-50", color: "text-blue-700", hex: "#185FA5" },
+  { bg: "bg-green-50", color: "text-green-700", hex: "#3B6D11" },
+  { bg: "bg-orange-50", color: "text-orange-700", hex: "#854F0B" },
+  { bg: "bg-pink-50", color: "text-pink-700", hex: "#993556" },
+  { bg: "bg-indigo-50", color: "text-indigo-700", hex: "#534AB7" },
+  { bg: "bg-emerald-50", color: "text-emerald-700", hex: "#0F6E56" },
 ];
 
 function getInitials(name) {
   return name.split(" ").map((n) => n[0]).join("").toUpperCase();
 }
 
-const AVATAR_COLORS = [
-  { bg: "#E6F1FB", color: "#185FA5" },
-  { bg: "#EAF3DE", color: "#3B6D11" },
-  { bg: "#FAEEDA", color: "#854F0B" },
-  { bg: "#FBEAF0", color: "#993556" },
-  { bg: "#EEEDFE", color: "#534AB7" },
-  { bg: "#E1F5EE", color: "#0F6E56" },
-];
-
 export default function AdminServices() {
-  const [services, setServices] = useState(DUMMY_SERVICES);
-  const [queries] = useState(DUMMY_QUERIES);
+  const [services, setServices] = useState([]);
+  const [queries, setQueries] = useState([]);
   const [showQueries, setShowQueries] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-  const [nextId, setNextId] = useState(5);
-  const [form, setForm] = useState({ name: "", description: "", logo: null, logoPreview: null });
   const [isMobile, setIsMobile] = useState(false);
+  const [form, setForm] = useState({ name: "", description: "", iconId: "code" });
 
-  const fileInputRef = useRef();
   const newQueryCount = queries.filter((q) => q.status === "new").length;
+  const selectedIcon = SERVICE_ICONS.find((ic) => ic.id === form.iconId);
+
+  useEffect(() => { getQueries(); }, []);
+  useEffect(() => { getServicesFromServer(); }, []);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
@@ -48,182 +149,200 @@ export default function AdminServices() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Close drawer when switching to desktop isn't needed, but close on mobile nav is nice
   useEffect(() => {
-    if (!isMobile) return;
-    // no-op — keep drawer state as-is
-  }, [isMobile]);
+    if (!successMsg) return;
+    const t = setTimeout(() => setSuccessMsg(false), 2500);
+    return () => clearTimeout(t);
+  }, [successMsg]);
 
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => setForm((f) => ({ ...f, logo: file, logoPreview: ev.target.result }));
-    reader.readAsDataURL(file);
+  const getQueries = async () => {
+    try {
+      const res = await axios.get(`${server}/query/all_queries`, { withCredentials: true });
+      setQueries(res.data.queries);
+    } catch (err) {
+      console.error("Error fetching queries:", err);
+    }
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!form.name.trim() || !form.description.trim()) {
       alert("Please fill in the service name and description.");
       return;
     }
-    setServices((prev) => [...prev, { id: nextId, name: form.name.trim(), description: form.description.trim(), logo: form.logo, logoPreview: form.logoPreview }]);
-    setNextId((n) => n + 1);
-    setForm({ name: "", description: "", logo: null, logoPreview: null });
-    if (fileInputRef.current) fileInputRef.current.value = "";
-    setSuccessMsg(true);
-    setTimeout(() => setSuccessMsg(false), 2500);
+    try {
+      console.log(form.iconId)
+      const res = await axios.post(`${server}/services/add_service`, {
+        name: form.name.trim(),
+        description: form.description.trim(),
+        iconId: form.iconId,
+      }, { withCredentials: true });
+      setServices((prev) => [...prev, res.data.service]);
+      setForm({ name: "", description: "", iconId: "code" });
+      setSuccessMsg(true);
+    } catch (err) {
+      console.error("Error adding service:", err);
+    }
   };
 
-  const handleDelete = (id) => {
-    setServices((prev) => prev.filter((svc) => svc.id !== id));
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${server}/services/delete_service/${id}`, { withCredentials: true });
+      setServices((prev) => prev.filter((svc) => svc._id !== id));
+      window.alert("Service deleted successfully.");
+    } catch (err) {
+      console.error("Error deleting service:", err);
+    }
   };
 
-  const drawerWidth = isMobile ? "100vw" : "380px";
+  const getServicesFromServer = async()=>{
+    try{
+      const res = await axios.get(`${server}/services/all_services`);
+      setServices(res.data.services);
+    }catch(err){
+      console.error("Error fetching services:", err);
+    }
+  }
 
   return (
-    <div style={s.page}>
-      {showQueries && <div style={s.overlay} onClick={() => setShowQueries(false)} />}
+    <div className="font-sans bg-gray-50 min-h-screen relative overflow-x-hidden">
+      {showQueries && (
+        <div className="fixed inset-0 bg-black/15 z-10" onClick={() => setShowQueries(false)} />
+      )}
 
-      <div style={s.layout}>
+      <div className="flex relative min-h-screen">
         {/* ══ MAIN CONTENT ══ */}
-        <div style={{ ...s.main, padding: isMobile ? "1.25rem" : "2rem" }}>
+        <div className="flex-1 min-w-0 p-5 sm:p-8">
 
           {/* Header */}
-          <div style={{
-            ...s.header,
-            marginBottom: isMobile ? "1.25rem" : "2rem",
-            flexWrap: "wrap",
-            gap: isMobile ? 10 : 0,
-          }}>
+          <div className="flex items-center justify-between flex-wrap gap-3 mb-5 sm:mb-8">
             <div>
-              <p style={s.headerLabel}>Admin Panel</p>
-              <h1 style={{ ...s.headerTitle, fontSize: isMobile ? 18 : 22 }}>Service Management</h1>
+              <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-1">Admin Panel</p>
+              <h1 className="text-lg sm:text-xl font-medium text-gray-900 m-0">Service Management</h1>
             </div>
             <button
               onClick={() => setShowQueries((v) => !v)}
-              style={{
-                ...s.queriesBtn,
-                background: showQueries ? "#111" : "#fff",
-                color: showQueries ? "#fff" : "#111",
-                padding: isMobile ? "7px 12px" : "8px 16px",
-                fontSize: isMobile ? 12 : 13,
-              }}
+              className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-xs sm:text-sm font-medium cursor-pointer transition-colors whitespace-nowrap ${
+                showQueries ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+              }`}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
-              {isMobile ? "Queries" : (showQueries ? "Close Queries" : "View Queries")}
+              {isMobile ? "Queries" : showQueries ? "Close Queries" : "View Queries"}
               {newQueryCount > 0 && (
-                <span style={{
-                  ...s.badge,
-                  background: showQueries ? "rgba(255,255,255,0.2)" : "#E6F1FB",
-                  color: showQueries ? "#fff" : "#185FA5",
-                }}>
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${showQueries ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700"}`}>
                   {newQueryCount} new
                 </span>
               )}
             </button>
           </div>
 
-          {/* Grid — 2 col on desktop, 1 col on mobile */}
-          <div style={{
-            ...s.grid,
-            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-            gap: isMobile ? "1rem" : "1.5rem",
-          }}>
+          {/* Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 items-start">
 
             {/* ── Add Service Form ── */}
-            <div style={s.card}>
-              <h2 style={s.cardTitle}>Add new service</h2>
+            <div className="bg-white border border-gray-200 rounded-xl p-6">
+              <h2 className="text-base font-medium text-gray-900 mb-5">Add new service</h2>
 
-              <div style={s.fieldGroup}>
-                <label style={s.label}>Service logo</label>
-                <div style={s.dropZone} onClick={() => fileInputRef.current?.click()}>
-                  {form.logoPreview ? (
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-                      <img src={form.logoPreview} alt="preview" style={s.logoImg} />
-                      <span style={{ fontSize: 11, color: "#888" }}>{form.logo?.name}</span>
-                    </div>
-                  ) : (
-                    <>
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#bbb" strokeWidth="1.5">
-                        <polyline points="16 16 12 12 8 16" /><line x1="12" y1="12" x2="12" y2="21" />
-                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" />
-                      </svg>
-                      <p style={{ fontSize: 13, color: "#888", margin: "6px 0 2px" }}>Click to upload logo</p>
-                      <p style={{ fontSize: 11, color: "#bbb", margin: 0 }}>PNG, JPG, SVG · Max 2MB</p>
-                    </>
-                  )}
+              {/* Icon Picker */}
+              <div className="mb-4">
+                <label className="block text-xs font-medium text-gray-500 mb-2">Service icon</label>
+                <div className="grid grid-cols-6 gap-1.5 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                  {SERVICE_ICONS.map((icon) => (
+                    <button
+                      key={icon.id}
+                      onClick={() => setForm((f) => ({ ...f, iconId: icon.id }))}
+                      title={icon.label}
+                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg border transition-all cursor-pointer ${
+                        form.iconId === icon.id
+                          ? "bg-gray-900 border-gray-900"
+                          : "bg-white border-gray-200 hover:border-gray-400"
+                      }`}
+                    >
+                      {icon.svg(form.iconId === icon.id ? "#fff" : "#888")}
+                      <span className={`text-[9px] font-medium leading-none ${form.iconId === icon.id ? "text-white" : "text-gray-400"}`}>
+                        {icon.label}
+                      </span>
+                    </button>
+                  ))}
                 </div>
-                <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleLogoChange} />
+
+                {/* Preview */}
+                {selectedIcon && (
+                  <div className="flex items-center gap-2 mt-2.5 px-3 py-2 bg-blue-50 border border-blue-100 rounded-lg">
+                    <div className="w-7 h-7 bg-blue-100 rounded-md flex items-center justify-center">
+                      {selectedIcon.svg("#185FA5")}
+                    </div>
+                    <span className="text-xs text-blue-700 font-medium">
+                      Selected: {selectedIcon.label}
+                    </span>
+                  </div>
+                )}
               </div>
 
-              <div style={s.fieldGroup}>
-                <label style={s.label}>Service name</label>
+              {/* Name */}
+              <div className="mb-4">
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">Service name</label>
                 <input
                   type="text"
                   placeholder="e.g. UI/UX Design"
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                  style={s.input}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none text-gray-900"
                 />
               </div>
 
-              <div style={s.fieldGroup}>
-                <label style={s.label}>Description</label>
+              {/* Description */}
+              <div className="mb-4">
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">Description</label>
                 <textarea
                   placeholder="Briefly describe what this service includes..."
                   rows={4}
                   value={form.description}
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                  style={s.textarea}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none text-gray-900 resize-y"
                 />
               </div>
 
-              <button style={s.addBtn} onClick={handleAdd}>
+              <button onClick={handleAdd} className="w-full py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg cursor-pointer flex items-center justify-center gap-1.5 hover:bg-gray-800 transition-colors">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
                 Add Service
               </button>
 
-              {successMsg && <p style={s.successMsg}>✓ Service added successfully!</p>}
+              {successMsg && <p className="mt-2.5 text-xs text-green-700 text-center">✓ Service added successfully!</p>}
             </div>
 
             {/* ── Services List ── */}
             <div>
-              <h2 style={{ ...s.cardTitle, marginBottom: "0.875rem" }}>
+              <h2 className="text-base font-medium text-gray-900 mb-3.5">
                 Current services{" "}
-                <span style={{ fontSize: 13, fontWeight: 400, color: "#888" }}>({services.length})</span>
+                <span className="text-sm font-normal text-gray-400">({services.length})</span>
               </h2>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="flex flex-col gap-2.5">
                 {services.length === 0 && (
-                  <p style={{ fontSize: 13, color: "#bbb", textAlign: "center", padding: "2rem 0" }}>No services added yet.</p>
+                  <p className="text-sm text-gray-300 text-center py-8">No services added yet.</p>
                 )}
                 {services.map((svc, i) => {
                   const ac = AVATAR_COLORS[i % AVATAR_COLORS.length];
+                  const icon = SERVICE_ICONS.find((ic) => ic.id === svc.iconId) || SERVICE_ICONS[1];
                   return (
-                    <div key={svc.id} style={s.svcItem}>
-                      <div style={{ ...s.svcIcon, background: ac.bg }}>
-                        {svc.logoPreview ? (
-                          <img src={svc.logoPreview} alt="" style={{ width: 28, height: 28, objectFit: "cover", borderRadius: 4 }} />
-                        ) : (
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={ac.color} strokeWidth="1.8">
-                            <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-                          </svg>
-                        )}
+                    <div key={svc._id} className="bg-gray-50 border border-gray-200 rounded-lg px-3.5 py-3 flex items-start gap-3">
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${ac.bg}`}>
+                        {icon.svg(ac.hex)}
                       </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: 14, fontWeight: 500, margin: "0 0 3px", color: "#111" }}>{svc.name}</p>
-                        <p style={{ fontSize: 12, color: "#888", margin: 0, lineHeight: 1.5, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                          {svc.description}
-                        </p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 mb-0.5">{svc?.serviceName}</p>
+                        {console.log(svc)}
+                        <p className="text-xs text-gray-400 leading-relaxed line-clamp-2">{svc.description}</p>
                       </div>
-                      <button style={s.deleteBtn} onClick={() => handleDelete(svc.id)} title="Remove">
+                      <button onClick={() => handleDelete(svc._id)} className="text-black  hover:text-red-400 transition-colors pt-2 p-0 bg-transparent border-none cursor-pointer shrink-0">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                          <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                          <path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                          <path d="M10 11v6M14 11v6" />
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
                         </svg>
                       </button>
                     </div>
@@ -235,46 +354,42 @@ export default function AdminServices() {
         </div>
 
         {/* ══ QUERIES DRAWER ══ */}
-        <div style={{
-          ...s.drawer,
-          width: drawerWidth,
-          transform: showQueries ? "translateX(0)" : "translateX(100%)",
-          opacity: showQueries ? 1 : 0,
-          pointerEvents: showQueries ? "auto" : "none",
-        }}>
-          <div style={s.drawerHeader}>
+        <div className={`fixed top-0 right-0 h-screen bg-white border-l border-gray-200 z-20 flex flex-col shadow-xl transition-all duration-300 ${isMobile ? "w-screen" : "w-96"} ${showQueries ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 pointer-events-none"}`}>
+          <div className="flex items-start justify-between px-6 py-5 border-b border-gray-100">
             <div>
-              <h2 style={{ fontSize: 16, fontWeight: 500, margin: 0, color: "#111" }}>Client Queries</h2>
-              <p style={{ fontSize: 12, color: "#888", margin: "2px 0 0" }}>{queries.length} total · {newQueryCount} new</p>
+              <h2 className="text-base font-medium text-gray-900 m-0">Client Queries</h2>
+              <p className="text-xs text-gray-400 mt-0.5">{queries.length} total · {newQueryCount} new</p>
             </div>
-            <button style={s.closeBtn} onClick={() => setShowQueries(false)}>
+            <button onClick={() => setShowQueries(false)} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer p-1 flex items-center">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
 
-          <div style={s.drawerBody}>
+          <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-2.5">
+            {queries.length === 0 && (
+              <p className="text-sm text-gray-300 text-center py-8">No queries yet.</p>
+            )}
             {queries.map((q, i) => {
               const ac = AVATAR_COLORS[i % AVATAR_COLORS.length];
               return (
-                <div key={q.id} style={{ ...s.queryCard, borderLeft: q.status === "new" ? "3px solid #185FA5" : "3px solid transparent" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                    <div style={{ ...s.avatar, background: ac.bg, color: ac.color }}>
+                <div key={q._id} className={`border border-gray-100 rounded-lg px-3.5 py-3 bg-white border-l-4 ${q.status === "new" ? "border-l-blue-600" : "border-l-transparent"}`}>
+                  <div className="flex items-center gap-2.5 mb-2">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${ac.bg} ${ac.color}`}>
                       {getInitials(q.name)}
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <p style={{ fontSize: 13, fontWeight: 500, margin: 0, color: "#111" }}>{q.name}</p>
-                        {q.status === "new" && <span style={s.newBadge}>New</span>}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-medium text-gray-900 m-0">{q.name}</p>
+                        {q.status === "new" && (
+                          <span className="text-xs font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full">New</span>
+                        )}
                       </div>
-                      <p style={{ fontSize: 11, color: "#aaa", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {q.email} · {q.time}
-                      </p>
+                      <p className="text-xs text-gray-400 m-0 truncate">{q.email}</p>
                     </div>
                   </div>
-                  <span style={s.servicePill}>{q.service}</span>
-                  <p style={{ fontSize: 12, color: "#666", margin: "6px 0 0", lineHeight: 1.6 }}>{q.message}</p>
+                  <p className="text-xs text-gray-500 leading-relaxed m-0">{q.message}</p>
                 </div>
               );
             })}
@@ -284,255 +399,3 @@ export default function AdminServices() {
     </div>
   );
 }
-
-const s = {
-  page: {
-    fontFamily: "'Segoe UI', sans-serif",
-    background: "#f5f5f0",
-    minHeight: "100vh",
-    position: "relative",
-    overflowX: "hidden",
-  },
-  overlay: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(0,0,0,0.15)",
-    zIndex: 10,
-  },
-  layout: {
-    display: "flex",
-    position: "relative",
-    minHeight: "100vh",
-  },
-  main: {
-    flex: 1,
-    minWidth: 0,
-    transition: "margin-right 0.3s ease",
-    boxSizing: "border-box",
-  },
-  header: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  headerLabel: {
-    fontSize: 11,
-    fontWeight: 600,
-    letterSpacing: "0.1em",
-    textTransform: "uppercase",
-    color: "#aaa",
-    margin: "0 0 4px",
-  },
-  headerTitle: {
-    fontWeight: 500,
-    color: "#111",
-    margin: 0,
-  },
-  queriesBtn: {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    borderRadius: 8,
-    border: "0.5px solid #ccc",
-    fontWeight: 500,
-    cursor: "pointer",
-    fontFamily: "inherit",
-    transition: "background 0.2s, color 0.2s",
-    whiteSpace: "nowrap",
-    flexShrink: 0,
-  },
-  badge: {
-    fontSize: 11,
-    fontWeight: 600,
-    padding: "2px 8px",
-    borderRadius: 20,
-  },
-  grid: {
-    display: "grid",
-    alignItems: "start",
-  },
-  card: {
-    background: "#fff",
-    border: "0.5px solid #e0e0e0",
-    borderRadius: 12,
-    padding: "1.5rem",
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: 500,
-    margin: "0 0 1.25rem",
-    color: "#111",
-  },
-  fieldGroup: { marginBottom: "1rem" },
-  label: {
-    fontSize: 12,
-    color: "#666",
-    display: "block",
-    marginBottom: 6,
-    fontWeight: 500,
-  },
-  dropZone: {
-    border: "1.5px dashed #ddd",
-    borderRadius: 8,
-    padding: "1.25rem",
-    textAlign: "center",
-    cursor: "pointer",
-    background: "#fafafa",
-    transition: "border-color 0.15s",
-  },
-  logoImg: {
-    width: 56,
-    height: 56,
-    objectFit: "cover",
-    borderRadius: 8,
-    border: "0.5px solid #e0e0e0",
-  },
-  input: {
-    width: "100%",
-    boxSizing: "border-box",
-    padding: "8px 12px",
-    fontSize: 14,
-    borderRadius: 8,
-    border: "0.5px solid #ddd",
-    background: "#fff",
-    color: "#111",
-    fontFamily: "inherit",
-    outline: "none",
-  },
-  textarea: {
-    width: "100%",
-    boxSizing: "border-box",
-    padding: "8px 12px",
-    fontSize: 14,
-    borderRadius: 8,
-    border: "0.5px solid #ddd",
-    background: "#fff",
-    color: "#111",
-    resize: "vertical",
-    fontFamily: "inherit",
-    outline: "none",
-  },
-  addBtn: {
-    width: "100%",
-    padding: "9px",
-    background: "#111",
-    color: "#fff",
-    border: "none",
-    borderRadius: 8,
-    fontSize: 14,
-    fontWeight: 500,
-    cursor: "pointer",
-    fontFamily: "inherit",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-  },
-  successMsg: {
-    marginTop: 10,
-    fontSize: 12,
-    color: "#3B6D11",
-    textAlign: "center",
-  },
-  svcItem: {
-    background: "#fafafa",
-    border: "0.5px solid #e8e8e8",
-    borderRadius: 8,
-    padding: "12px 14px",
-    display: "flex",
-    alignItems: "flex-start",
-    gap: 12,
-  },
-  svcIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: 8,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-  },
-  deleteBtn: {
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    color: "#ccc",
-    padding: 0,
-    flexShrink: 0,
-    lineHeight: 1,
-    display: "flex",
-    alignItems: "center",
-    transition: "color 0.15s",
-  },
-  drawer: {
-    position: "fixed",
-    top: 0,
-    right: 0,
-    height: "100vh",
-    background: "#fff",
-    borderLeft: "0.5px solid #e0e0e0",
-    zIndex: 20,
-    display: "flex",
-    flexDirection: "column",
-    transition: "transform 0.3s ease, opacity 0.3s ease",
-    boxShadow: "-4px 0 24px rgba(0,0,0,0.07)",
-  },
-  drawerHeader: {
-    display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    padding: "1.25rem 1.5rem",
-    borderBottom: "0.5px solid #e8e8e8",
-  },
-  drawerBody: {
-    flex: 1,
-    overflowY: "auto",
-    padding: "1rem 1.5rem",
-    display: "flex",
-    flexDirection: "column",
-    gap: 10,
-  },
-  closeBtn: {
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    color: "#888",
-    padding: 4,
-    display: "flex",
-    alignItems: "center",
-  },
-  queryCard: {
-    border: "0.5px solid #e8e8e8",
-    borderRadius: 8,
-    padding: "12px 14px",
-    background: "#fff",
-  },
-  avatar: {
-    width: 34,
-    height: 34,
-    borderRadius: "50%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: 12,
-    fontWeight: 600,
-    flexShrink: 0,
-  },
-  newBadge: {
-    background: "#E6F1FB",
-    color: "#185FA5",
-    fontSize: 10,
-    fontWeight: 600,
-    padding: "2px 7px",
-    borderRadius: 20,
-  },
-  servicePill: {
-    fontSize: 11,
-    background: "#f5f5f0",
-    color: "#666",
-    padding: "3px 8px",
-    borderRadius: 20,
-    border: "0.5px solid #e8e8e8",
-    display: "inline-block",
-  },
-};

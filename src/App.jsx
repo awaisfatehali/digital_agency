@@ -76,8 +76,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/Admin_Penal" element={<Adminservices />} />
-        <Route path="/Adminlogin" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<Adminservices />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
       </Routes>
     </>
   );
