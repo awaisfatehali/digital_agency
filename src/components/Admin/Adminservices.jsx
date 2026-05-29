@@ -1,119 +1,7 @@
 import { useState, useEffect } from "react";
 import { server } from "../../../server.js";
 import axios from "axios";
-
-const SERVICE_ICONS = [
-  {
-    id: "design",
-    label: "Design",
-    svg: (color) => (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <circle cx="12" cy="12" r="3" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /><path d="M4.93 4.93a10 10 0 0 0 0 14.14" />
-      </svg>
-    ),
-  },
-  {
-    id: "code",
-    label: "Code",
-    svg: (color) => (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
-      </svg>
-    ),
-  },
-  {
-    id: "seo",
-    label: "SEO",
-    svg: (color) => (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-      </svg>
-    ),
-  },
-  {
-    id: "brand",
-    label: "Brand",
-    svg: (color) => (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
-      </svg>
-    ),
-  },
-  {
-    id: "mobile",
-    label: "Mobile",
-    svg: (color) => (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12.01" y2="18" />
-      </svg>
-    ),
-  },
-  {
-    id: "cloud",
-    label: "Cloud",
-    svg: (color) => (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
-      </svg>
-    ),
-  },
-  {
-    id: "chart",
-    label: "Analytics",
-    svg: (color) => (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
-      </svg>
-    ),
-  },
-  {
-    id: "shield",
-    label: "Security",
-    svg: (color) => (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      </svg>
-    ),
-  },
-  {
-    id: "mail",
-    label: "Email",
-    svg: (color) => (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-        <polyline points="22,6 12,13 2,6" />
-      </svg>
-    ),
-  },
-  {
-    id: "video",
-    label: "Video",
-    svg: (color) => (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" />
-      </svg>
-    ),
-  },
-  {
-    id: "settings",
-    label: "DevOps",
-    svg: (color) => (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-      </svg>
-    ),
-  },
-  {
-    id: "pen",
-    label: "Content",
-    svg: (color) => (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-      </svg>
-    ),
-  },
-];
+import { SERVICE_ICONS } from "../Service_icon.jsx";
 
 const AVATAR_COLORS = [
   { bg: "bg-blue-50", color: "text-blue-700", hex: "#185FA5" },
@@ -125,7 +13,11 @@ const AVATAR_COLORS = [
 ];
 
 function getInitials(name) {
-  return name.split(" ").map((n) => n[0]).join("").toUpperCase();
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
 }
 
 export default function AdminServices() {
@@ -134,13 +26,21 @@ export default function AdminServices() {
   const [showQueries, setShowQueries] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [form, setForm] = useState({ name: "", description: "", iconId: "code" });
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    iconId: "code",
+  });
 
   const newQueryCount = queries.filter((q) => q.status === "new").length;
   const selectedIcon = SERVICE_ICONS.find((ic) => ic.id === form.iconId);
 
-  useEffect(() => { getQueries(); }, []);
-  useEffect(() => { getServicesFromServer(); }, []);
+  useEffect(() => {
+    getQueries();
+  }, []);
+  useEffect(() => {
+    getServicesFromServer();
+  }, []);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
@@ -157,7 +57,9 @@ export default function AdminServices() {
 
   const getQueries = async () => {
     try {
-      const res = await axios.get(`${server}/query/all_queries`, { withCredentials: true });
+      const res = await axios.get(`${server}/query/all_queries`, {
+        withCredentials: true,
+      });
       setQueries(res.data.queries);
     } catch (err) {
       console.error("Error fetching queries:", err);
@@ -170,12 +72,15 @@ export default function AdminServices() {
       return;
     }
     try {
-      console.log(form.iconId)
-      const res = await axios.post(`${server}/services/add_service`, {
-        name: form.name.trim(),
-        description: form.description.trim(),
-        iconId: form.iconId,
-      }, { withCredentials: true });
+      const res = await axios.post(
+        `${server}/services/add_service`,
+        {
+          name: form.name.trim(),
+          description: form.description.trim(),
+          iconId: form.iconId,
+        },
+        { withCredentials: true },
+      );
       setServices((prev) => [...prev, res.data.service]);
       setForm({ name: "", description: "", iconId: "code" });
       setSuccessMsg(true);
@@ -186,72 +91,146 @@ export default function AdminServices() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${server}/services/delete_service/${id}`, { withCredentials: true });
+      await axios.delete(`${server}/services/delete_service/${id}`, {
+        withCredentials: true,
+      });
       setServices((prev) => prev.filter((svc) => svc._id !== id));
       window.alert("Service deleted successfully.");
     } catch (err) {
       console.error("Error deleting service:", err);
     }
   };
+  const handleDeleteQuery = (id) => {
+    try {
+      const response = axios.delete(`${server}/query/deleteQuery/${id}`,{
+        withCredentials:true
+      });
+       console.log("Querry deleted Successfully!");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  const getServicesFromServer = async()=>{
-    try{
+  const getServicesFromServer = async () => {
+    try {
       const res = await axios.get(`${server}/services/all_services`);
-      setServices(res.data.services);
-    }catch(err){
+      setServices(res.data.services || []);
+    } catch (err) {
       console.error("Error fetching services:", err);
     }
-  }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await axios.get(`${server}/admin/logout`, {
+        withCredentials: true,
+      });
+      if (response.data.success) {
+        localStorage.setItem("adminLoggedIn", "false");
+        window.location.href = "/admin/login";
+      }
+    } catch (err) {
+      console.error("Error logging out:", err);
+    }
+  };
 
   return (
     <div className="font-sans bg-gray-50 min-h-screen relative overflow-x-hidden">
       {showQueries && (
-        <div className="fixed inset-0 bg-black/15 z-10" onClick={() => setShowQueries(false)} />
+        <div
+          className="fixed inset-0 bg-black/15 z-10"
+          onClick={() => setShowQueries(false)}
+        />
       )}
 
       <div className="flex relative min-h-screen">
-        {/* ══ MAIN CONTENT ══ */}
         <div className="flex-1 min-w-0 p-5 sm:p-8">
-
           {/* Header */}
           <div className="flex items-center justify-between flex-wrap gap-3 mb-5 sm:mb-8">
             <div>
-              <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-1">Admin Panel</p>
-              <h1 className="text-lg sm:text-xl font-medium text-gray-900 m-0">Service Management</h1>
+              <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-1">
+                Admin Panel
+              </p>
+              <h1 className="text-lg sm:text-xl font-medium text-gray-900 m-0">
+                Service Management
+              </h1>
             </div>
-            <button
-              onClick={() => setShowQueries((v) => !v)}
-              className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-xs sm:text-sm font-medium cursor-pointer transition-colors whitespace-nowrap ${
-                showQueries ? "bg-gray-900 text-white" : "bg-white text-gray-900"
-              }`}
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-              {isMobile ? "Queries" : showQueries ? "Close Queries" : "View Queries"}
-              {newQueryCount > 0 && (
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${showQueries ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700"}`}>
-                  {newQueryCount} new
-                </span>
-              )}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowQueries((v) => !v)}
+                className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-xs sm:text-sm font-medium cursor-pointer transition-colors whitespace-nowrap ${
+                  showQueries
+                    ? "bg-gray-900 text-white"
+                    : "bg-white text-gray-900"
+                }`}
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                {isMobile
+                  ? "Queries"
+                  : showQueries
+                    ? "Close Queries"
+                    : "View Queries"}
+                {newQueryCount > 0 && (
+                  <span
+                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${showQueries ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700"}`}
+                  >
+                    {newQueryCount} new
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg border border-red-200 bg-white text-red-600 text-xs sm:text-sm font-medium cursor-pointer transition-colors hover:bg-red-50 hover:border-red-300 whitespace-nowrap"
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                {isMobile ? "" : "Logout"}
+              </button>
+            </div>
           </div>
 
           {/* Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 items-start">
-
-            {/* ── Add Service Form ── */}
+            {/* Add Service Form */}
             <div className="bg-white border border-gray-200 rounded-xl p-6">
-              <h2 className="text-base font-medium text-gray-900 mb-5">Add new service</h2>
+              <h2 className="text-base font-medium text-gray-900 mb-5">
+                Add new service
+              </h2>
 
-              {/* Icon Picker */}
               <div className="mb-4">
-                <label className="block text-xs font-medium text-gray-500 mb-2">Service icon</label>
+                <label className="block text-xs font-medium text-gray-500 mb-2">
+                  Service icon
+                </label>
                 <div className="grid grid-cols-6 gap-1.5 p-3 bg-gray-50 border border-gray-200 rounded-lg">
                   {SERVICE_ICONS.map((icon) => (
                     <button
                       key={icon.id}
-                      onClick={() => setForm((f) => ({ ...f, iconId: icon.id }))}
+                      onClick={() =>
+                        setForm((f) => ({ ...f, iconId: icon.id }))
+                      }
                       title={icon.label}
                       className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg border transition-all cursor-pointer ${
                         form.iconId === icon.id
@@ -260,14 +239,14 @@ export default function AdminServices() {
                       }`}
                     >
                       {icon.svg(form.iconId === icon.id ? "#fff" : "#888")}
-                      <span className={`text-[9px] font-medium leading-none ${form.iconId === icon.id ? "text-white" : "text-gray-400"}`}>
+                      <span
+                        className={`text-[9px] font-medium leading-none ${form.iconId === icon.id ? "text-white" : "text-gray-400"}`}
+                      >
                         {icon.label}
                       </span>
                     </button>
                   ))}
                 </div>
-
-                {/* Preview */}
                 {selectedIcon && (
                   <div className="flex items-center gap-2 mt-2.5 px-3 py-2 bg-blue-50 border border-blue-100 rounded-lg">
                     <div className="w-7 h-7 bg-blue-100 rounded-md flex items-center justify-center">
@@ -280,65 +259,110 @@ export default function AdminServices() {
                 )}
               </div>
 
-              {/* Name */}
               <div className="mb-4">
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">Service name</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                  Service name
+                </label>
                 <input
                   type="text"
                   placeholder="e.g. UI/UX Design"
                   value={form.name}
-                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, name: e.target.value }))
+                  }
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none text-gray-900"
                 />
               </div>
 
-              {/* Description */}
               <div className="mb-4">
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">Description</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                  Description
+                </label>
                 <textarea
                   placeholder="Briefly describe what this service includes..."
                   rows={4}
                   value={form.description}
-                  onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, description: e.target.value }))
+                  }
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none text-gray-900 resize-y"
                 />
               </div>
 
-              <button onClick={handleAdd} className="w-full py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg cursor-pointer flex items-center justify-center gap-1.5 hover:bg-gray-800 transition-colors">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              <button
+                onClick={handleAdd}
+                className="w-full py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg cursor-pointer flex items-center justify-center gap-1.5 hover:bg-gray-800 transition-colors"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
                 Add Service
               </button>
 
-              {successMsg && <p className="mt-2.5 text-xs text-green-700 text-center">✓ Service added successfully!</p>}
+              {successMsg && (
+                <p className="mt-2.5 text-xs text-green-700 text-center">
+                  ✓ Service added successfully!
+                </p>
+              )}
             </div>
 
-            {/* ── Services List ── */}
+            {/* Services List */}
             <div>
               <h2 className="text-base font-medium text-gray-900 mb-3.5">
                 Current services{" "}
-                <span className="text-sm font-normal text-gray-400">({services.length})</span>
+                <span className="text-sm font-normal text-gray-400">
+                  ({services.length})
+                </span>
               </h2>
               <div className="flex flex-col gap-2.5">
                 {services.length === 0 && (
-                  <p className="text-sm text-gray-300 text-center py-8">No services added yet.</p>
+                  <p className="text-sm text-gray-300 text-center py-8">
+                    No services added yet.
+                  </p>
                 )}
                 {services.map((svc, i) => {
                   const ac = AVATAR_COLORS[i % AVATAR_COLORS.length];
-                  const icon = SERVICE_ICONS.find((ic) => ic.id === svc.iconId) || SERVICE_ICONS[1];
+                  const icon =
+                    SERVICE_ICONS.find((ic) => ic.id === svc.iconId) ||
+                    SERVICE_ICONS[1];
                   return (
-                    <div key={svc._id} className="bg-gray-50 border border-gray-200 rounded-lg px-3.5 py-3 flex items-start gap-3">
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${ac.bg}`}>
+                    <div
+                      key={svc._id}
+                      className="bg-gray-50 border border-gray-200 rounded-lg px-3.5 py-3 flex items-start gap-3"
+                    >
+                      <div
+                        className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${ac.bg}`}
+                      >
                         {icon.svg(ac.hex)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 mb-0.5">{svc?.serviceName}</p>
-                        {console.log(svc)}
-                        <p className="text-xs text-gray-400 leading-relaxed line-clamp-2">{svc.description}</p>
+                        <p className="text-sm font-medium text-gray-900 mb-0.5">
+                          {svc?.serviceName}
+                        </p>
+                        <p className="text-xs text-gray-400 leading-relaxed line-clamp-2">
+                          {svc.description}
+                        </p>
                       </div>
-                      <button onClick={() => handleDelete(svc._id)} className="text-black  hover:text-red-400 transition-colors pt-2 p-0 bg-transparent border-none cursor-pointer shrink-0">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                      <button
+                        onClick={() => handleDelete(svc._id)}
+                        className="text-black hover:text-red-400 transition-colors pt-2 p-0 bg-transparent border-none cursor-pointer shrink-0"
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                        >
                           <polyline points="3 6 5 6 21 6" />
                           <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                           <path d="M10 11v6M14 11v6" />
@@ -353,43 +377,97 @@ export default function AdminServices() {
           </div>
         </div>
 
-        {/* ══ QUERIES DRAWER ══ */}
-        <div className={`fixed top-0 right-0 h-screen bg-white border-l border-gray-200 z-20 flex flex-col shadow-xl transition-all duration-300 ${isMobile ? "w-screen" : "w-96"} ${showQueries ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 pointer-events-none"}`}>
+        {/* Queries Drawer */}
+        <div
+          className={`fixed top-0 right-0 h-screen bg-white border-l border-gray-200 z-20 flex flex-col shadow-xl transition-all duration-300 ${isMobile ? "w-screen" : "w-96"} ${showQueries ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 pointer-events-none"}`}
+        >
           <div className="flex items-start justify-between px-6 py-5 border-b border-gray-100">
             <div>
-              <h2 className="text-base font-medium text-gray-900 m-0">Client Queries</h2>
-              <p className="text-xs text-gray-400 mt-0.5">{queries.length} total · {newQueryCount} new</p>
+              <h2 className="text-base font-medium text-gray-900 m-0">
+                Client Queries
+              </h2>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {queries.length} total · {newQueryCount} new
+              </p>
             </div>
-            <button onClick={() => setShowQueries(false)} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer p-1 flex items-center">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            <button
+              onClick={() => setShowQueries(false)}
+              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer p-1 flex items-center"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
-
           <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-2.5">
             {queries.length === 0 && (
-              <p className="text-sm text-gray-300 text-center py-8">No queries yet.</p>
+              <p className="text-sm text-gray-300 text-center py-8">
+                No queries yet.
+              </p>
             )}
             {queries.map((q, i) => {
               const ac = AVATAR_COLORS[i % AVATAR_COLORS.length];
               return (
-                <div key={q._id} className={`border border-gray-100 rounded-lg px-3.5 py-3 bg-white border-l-4 ${q.status === "new" ? "border-l-blue-600" : "border-l-transparent"}`}>
-                  <div className="flex items-center gap-2.5 mb-2">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${ac.bg} ${ac.color}`}>
-                      {getInitials(q.name)}
-                    </div>
-                    <div className="flex-1 min-w-0">
+                <div
+                  key={q._id}
+                  className={`border border-gray-100 rounded-lg px-3.5 py-3 bg-white border-l-4 ${q.status === "new" ? "border-l-blue-600" : "border-l-transparent"}`}
+                >
+                  {/* UPDATED HEADER */}
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2.5 mb-2">
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${ac.bg} ${ac.color}`}
+                      >
+                        {getInitials(q.name)}
+                      </div>
+
                       <div className="flex items-center gap-1.5">
-                        <p className="text-sm font-medium text-gray-900 m-0">{q.name}</p>
+                        <p className="text-sm font-medium text-gray-900 m-0">
+                          {q.name}
+                        </p>
                         {q.status === "new" && (
-                          <span className="text-xs font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full">New</span>
+                          <span className="text-xs font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full">
+                            New
+                          </span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-400 m-0 truncate">{q.email}</p>
                     </div>
+
+                    <button
+                      onClick={() => handleDeleteQuery(q._id)}
+                      className="text-gray-300 hover:text-red-400 transition-colors bg-transparent border-none cursor-pointer p-0"
+                    >
+                      <svg
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                        <path d="M10 11v6M14 11v6" />
+                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                      </svg>
+                    </button>
                   </div>
-                  <p className="text-xs text-gray-500 leading-relaxed m-0">{q.message}</p>
+
+                  <p className="text-xs text-gray-400 m-0 truncate">
+                    {q.email}
+                  </p>
+
+                  <p className="text-xs text-gray-500 leading-relaxed m-0 mt-2">
+                    {q.message}
+                  </p>
                 </div>
               );
             })}

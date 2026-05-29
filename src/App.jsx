@@ -3,12 +3,14 @@ import Navbar from "./components/Navbar";
 import hero1 from "./assets/hero1.jpg";
 import { FaCaretRight } from "react-icons/fa";
 import About from "./components/About";
-import {Routes, Route} from 'react-router-dom'
+import { Routes, Route } from "react-router-dom";
 import HomePage from "./components/HomePage.jsx";
 import Services from "./components/Services.jsx";
-import Contact from "./components/Contact.jsx"
-import Adminservices from "./components/Admin/Adminservices.jsx"
+import Contact from "./components/Contact.jsx";
+import Adminservices from "./components/Admin/Adminservices.jsx";
 import AdminLogin from "./components/Admin/Adminlogin.jsx";
+import ProtectedRoute from "./components/Admin/ProtectedRoute.jsx";
+import ProtectedRoute2 from "./components/Admin/ProtectedRoute2.jsx";
 
 function App() {
   const [ProcessDetail] = useState([
@@ -58,13 +60,9 @@ function App() {
       >
         <div className="bg-blue-900 h-2 w-9"></div>
 
-        <h1 className="text-blue-950 font-black text-4xl">
-          {item.title}
-        </h1>
+        <h1 className="text-blue-950 font-black text-4xl">{item.title}</h1>
 
-        <p className="text-black text-lg leading-relaxed">
-          {item.description}
-        </p>
+        <p className="text-black text-lg leading-relaxed">{item.description}</p>
       </div>
     ));
   };
@@ -76,8 +74,22 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/admin/dashboard" element={<Adminservices />} />
-        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <Adminservices />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/login"
+          element={
+            <ProtectedRoute2>
+              <AdminLogin />
+            </ProtectedRoute2>
+          }
+        />
       </Routes>
     </>
   );

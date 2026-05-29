@@ -1,13 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { TfiWrite } from "react-icons/tfi";
 import { BiSelection } from "react-icons/bi";
 import { FaRegPaperPlane } from "react-icons/fa";
 import { FaRegLightbulb } from "react-icons/fa";
 import { FaRegCreditCard } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
+import axios from "axios";
+import { server } from "../../server";
+import { SERVICE_ICONS } from "./Service_icon";
 
 const HelpSection = () => {
-  const HelpData = [
+  const [HelpData, setHelpData] = useState([]);
+  const HelpData1 = [
     {
       icon: <TfiWrite className="text-4xl text-blue-900" />,
       title: "Design",
@@ -45,6 +49,17 @@ const HelpSection = () => {
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et justo. Praesent mattis commodo augue.",
     },
   ];
+  const getallservices = async () => {
+    try {
+      const response = await axios.get(`${server}/services/all_services`);
+      setHelpData(response.data.services);
+    } catch (error) {
+      setHelpData(HelpData1);
+    }
+  };
+  useEffect(() => {
+    getallservices();
+  }, []);
 
   return (
     <section className=" py-24 flex flex-col justify-between items-center gap-10">
@@ -61,16 +76,25 @@ const HelpSection = () => {
       </div>
 
       {/* Cards */}
-      <div className="flex flex-wrap items-center justify-center md:justify-between gap-6">
+      <div className="flex flex-wrap items-center justify-center lg:justify-between gap-6">
         {HelpData.map((item, index) => (
           <div
             key={index}
             className="p-8 bg-gray-50 w-[350px] h-[350px] rounded-lg shadow-2xl hover:shadow-md transition"
           >
-            {item.icon}
+            {(() => {
+              const icon =
+                SERVICE_ICONS.find((ic) => ic.id === item.iconId) ||
+                SERVICE_ICONS.find((ic) => ic.id === "code");
+              return (
+                <div className="text-blue-900 [&_svg]:w-8 [&_svg]:h-8">
+                  {icon.svg("#1e3a8a")}
+                </div>
+              );
+            })()}
 
             <h3 className="text-xl font-bold text-gray-800 mt-4">
-              {item.title}
+              {item.serviceName}
             </h3>
 
             <p className="text-gray-600 mt-2 leading-relaxed">

@@ -32,10 +32,11 @@ export default function AdminLogin({ onLogin }) {
     setLoading(true);
     // TODO: POST /api/admin/login { email, password }
     try {
-      const response = await axios.post(`${server}/admin/login`, form,{
+      const response = await axios.post(`${server}/admin/login`, form, {
         withCredentials: true,
       });
-      if(response.data.success){
+      if (response.data.success) {
+        localStorage.setItem("adminLoggedIn", "true");
         navigate("/admin/dashboard");
       }
     } catch (err) {
@@ -54,27 +55,39 @@ export default function AdminLogin({ onLogin }) {
     <div style={s.page}>
       <div style={s.gridBg} />
 
-      <div style={{
-        ...s.wrapper,
-        flexDirection: isMobile ? "column" : "row",
-        margin: isMobile ? "1rem" : "2rem",
-        minHeight: isMobile ? "auto" : 540,
-      }}>
-
+      <div
+        style={{
+          ...s.wrapper,
+          flexDirection: isMobile ? "column" : "row",
+          margin: isMobile ? "1rem" : "2rem",
+          minHeight: isMobile ? "auto" : 540,
+        }}
+      >
         {/* ── Left / Top panel ── */}
-        <div style={{
-          ...s.leftPanel,
-          width: isMobile ? "100%" : 300,
-          padding: isMobile ? "1.5rem" : "2rem",
-          flexDirection: isMobile ? "row" : "column",
-          alignItems: isMobile ? "center" : "stretch",
-          justifyContent: isMobile ? "space-between" : "space-between",
-          gap: isMobile ? 0 : undefined,
-        }}>
+        <div
+          style={{
+            ...s.leftPanel,
+            width: isMobile ? "100%" : 300,
+            padding: isMobile ? "1.5rem" : "2rem",
+            flexDirection: isMobile ? "row" : "column",
+            alignItems: isMobile ? "center" : "stretch",
+            justifyContent: isMobile ? "space-between" : "space-between",
+            gap: isMobile ? 0 : undefined,
+          }}
+        >
           {/* Brand mark — always visible */}
           <div style={s.brandMark}>
             <div style={s.brandIcon}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#fff"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <rect x="2" y="7" width="20" height="14" rx="2" />
                 <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
                 <line x1="12" y1="12" x2="12" y2="16" />
@@ -90,7 +103,11 @@ export default function AdminLogin({ onLogin }) {
           {/* Stats row — inline on mobile, bottom on desktop */}
           {isMobile ? (
             <div style={s.statsMobileRow}>
-              {[{ value: "4", label: "Svc" }, { value: "6", label: "Qrs" }, { value: "2", label: "New" }].map((stat) => (
+              {[
+                { value: "4", label: "Svc" },
+                { value: "6", label: "Qrs" },
+                { value: "2", label: "New" },
+              ].map((stat) => (
                 <div key={stat.label} style={s.statMobile}>
                   <p style={s.statValue}>{stat.value}</p>
                   <p style={s.statLabel}>{stat.label}</p>
@@ -101,13 +118,22 @@ export default function AdminLogin({ onLogin }) {
             <>
               <div style={s.panelContent}>
                 <p style={s.panelEyebrow}>Secure access</p>
-                <h2 style={s.panelHeading}>Manage your<br />services &amp; queries</h2>
+                <h2 style={s.panelHeading}>
+                  Manage your
+                  <br />
+                  services &amp; queries
+                </h2>
                 <p style={s.panelBody}>
-                  Your central hub for adding services, reviewing client queries, and keeping everything running smoothly.
+                  Your central hub for adding services, reviewing client
+                  queries, and keeping everything running smoothly.
                 </p>
               </div>
               <div style={s.statsRow}>
-                {[{ value: "4", label: "Services" }, { value: "6", label: "Queries" }, { value: "2", label: "New" }].map((stat) => (
+                {[
+                  { value: "4", label: "Services" },
+                  { value: "6", label: "Queries" },
+                  { value: "2", label: "New" },
+                ].map((stat) => (
                   <div key={stat.label} style={s.stat}>
                     <p style={s.statValue}>{stat.value}</p>
                     <p style={s.statLabel}>{stat.label}</p>
@@ -119,14 +145,18 @@ export default function AdminLogin({ onLogin }) {
         </div>
 
         {/* ── Right / Bottom form panel ── */}
-        <div style={{
-          ...s.formPanel,
-          padding: isMobile ? "1.75rem 1.25rem" : "2.5rem",
-        }}>
+        <div
+          style={{
+            ...s.formPanel,
+            padding: isMobile ? "1.75rem 1.25rem" : "2.5rem",
+          }}
+        >
           <div style={s.formInner}>
             <div style={s.formHeader}>
               <p style={s.formEyebrow}>Admin Panel</p>
-              <h1 style={{ ...s.formTitle, fontSize: isMobile ? 20 : 24 }}>Sign in</h1>
+              <h1 style={{ ...s.formTitle, fontSize: isMobile ? 20 : 24 }}>
+                Sign in
+              </h1>
               <p style={s.formSubtitle}>Enter your credentials to continue</p>
             </div>
 
@@ -134,8 +164,22 @@ export default function AdminLogin({ onLogin }) {
             <div style={s.fieldGroup}>
               <label style={s.label}>Email address</label>
               <div style={{ position: "relative" }}>
-                <span style={{ ...s.inputIcon, color: focused === "email" ? "#111" : "#bbb" }}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <span
+                  style={{
+                    ...s.inputIcon,
+                    color: focused === "email" ? "#111" : "#bbb",
+                  }}
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                     <polyline points="22,6 12,13 2,6" />
                   </svg>
@@ -144,15 +188,22 @@ export default function AdminLogin({ onLogin }) {
                   type="email"
                   placeholder="admin@example.com"
                   value={form.email}
-                  onChange={(e) => { setForm((f) => ({ ...f, email: e.target.value })); setError(""); }}
+                  onChange={(e) => {
+                    setForm((f) => ({ ...f, email: e.target.value }));
+                    setError("");
+                  }}
                   onFocus={() => setFocused("email")}
                   onBlur={() => setFocused(null)}
                   onKeyDown={handleKey}
                   style={{
                     ...s.input,
                     paddingLeft: 38,
-                    borderColor: focused === "email" ? "#111" : error ? "#c0392b" : "#ddd",
-                    boxShadow: focused === "email" ? "0 0 0 3px rgba(17,17,17,0.06)" : "none",
+                    borderColor:
+                      focused === "email" ? "#111" : error ? "#c0392b" : "#ddd",
+                    boxShadow:
+                      focused === "email"
+                        ? "0 0 0 3px rgba(17,17,17,0.06)"
+                        : "none",
                   }}
                 />
               </div>
@@ -160,13 +211,34 @@ export default function AdminLogin({ onLogin }) {
 
             {/* Password */}
             <div style={s.fieldGroup}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 6,
+                }}
+              >
                 <label style={s.label}>Password</label>
                 <button style={s.forgotLink}>Forgot password?</button>
               </div>
               <div style={{ position: "relative" }}>
-                <span style={{ ...s.inputIcon, color: focused === "password" ? "#111" : "#bbb" }}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <span
+                  style={{
+                    ...s.inputIcon,
+                    color: focused === "password" ? "#111" : "#bbb",
+                  }}
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                   </svg>
@@ -175,7 +247,10 @@ export default function AdminLogin({ onLogin }) {
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={form.password}
-                  onChange={(e) => { setForm((f) => ({ ...f, password: e.target.value })); setError(""); }}
+                  onChange={(e) => {
+                    setForm((f) => ({ ...f, password: e.target.value }));
+                    setError("");
+                  }}
                   onFocus={() => setFocused("password")}
                   onBlur={() => setFocused(null)}
                   onKeyDown={handleKey}
@@ -183,8 +258,16 @@ export default function AdminLogin({ onLogin }) {
                     ...s.input,
                     paddingLeft: 38,
                     paddingRight: 42,
-                    borderColor: focused === "password" ? "#111" : error ? "#c0392b" : "#ddd",
-                    boxShadow: focused === "password" ? "0 0 0 3px rgba(17,17,17,0.06)" : "none",
+                    borderColor:
+                      focused === "password"
+                        ? "#111"
+                        : error
+                          ? "#c0392b"
+                          : "#ddd",
+                    boxShadow:
+                      focused === "password"
+                        ? "0 0 0 3px rgba(17,17,17,0.06)"
+                        : "none",
                   }}
                 />
                 <button
@@ -193,13 +276,31 @@ export default function AdminLogin({ onLogin }) {
                   title={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
                       <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
                       <line x1="1" y1="1" x2="23" y2="23" />
                     </svg>
                   ) : (
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                       <circle cx="12" cy="12" r="3" />
                     </svg>
@@ -211,8 +312,19 @@ export default function AdminLogin({ onLogin }) {
             {/* Error */}
             {error && (
               <div style={s.errorBox}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
                 {error}
               </div>
@@ -229,15 +341,29 @@ export default function AdminLogin({ onLogin }) {
               ) : (
                 <>
                   Sign in
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
                   </svg>
                 </>
               )}
             </button>
 
             <p style={s.hint}>
-              Demo: <span style={{ color: "#111", fontWeight: 500 }}>admin@example.com</span> / <span style={{ color: "#111", fontWeight: 500 }}>password</span>
+              Demo:{" "}
+              <span style={{ color: "#111", fontWeight: 500 }}>
+                admin@example.com
+              </span>{" "}
+              / <span style={{ color: "#111", fontWeight: 500 }}>password</span>
             </p>
           </div>
         </div>
