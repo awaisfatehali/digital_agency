@@ -7,7 +7,7 @@ function ProtectedRoute({ children }) {
   if (adminLoggedIn) {
     return children;
   } else {
-    return <Navigate to="/admin/login" />;
+    return <Navigate to="/" />;
   }
 }
 
